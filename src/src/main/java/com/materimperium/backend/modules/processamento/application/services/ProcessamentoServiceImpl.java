@@ -1,5 +1,7 @@
 package com.materimperium.backend.modules.processamento.application.services;
 
+import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoCriadoResponse;
+import com.materimperium.backend.modules.processamento.application.interfaces.AuthenticatedUserService;
 import com.materimperium.backend.modules.shared.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.application.dtos.ResumoResponse;
@@ -8,7 +10,9 @@ import com.materimperium.backend.modules.processamento.domain.entities.Processam
 import com.materimperium.backend.modules.processamento.domain.entities.StatusProcessamento;
 import com.materimperium.backend.modules.processamento.domain.interfaces.repositories.ProcessamentoArquivoRepository;
 import com.materimperium.backend.modules.processamento.application.interfaces.ProcessamentoService;
-import org.springframework.beans.factory.annotation.Qualifier; // Adicionado
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -18,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProcessamentoServiceImpl implements ProcessamentoService {
@@ -27,51 +31,57 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
     private final ArquivoValidator validator;
     private final JobLauncher jobLauncher;
     private final Job processarArquivoJob;
+    private final AuthenticatedUserService authenticatedUserService;
 
     public ProcessamentoServiceImpl(
             ProcessamentoArquivoRepository processamentoArquivoRepository,
             ArquivoValidator validator,
             @Qualifier("asyncJobLauncher") JobLauncher jobLauncher,
-            Job processarArquivoJob) {
+            Job processarArquivoJob,
+            AuthenticatedUserService authenticatedUserService) {
         this.processamentoArquivoRepository = processamentoArquivoRepository;
         this.validator = validator;
         this.jobLauncher = jobLauncher;
         this.processarArquivoJob = processarArquivoJob;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @Override
-    public Result<UUID> iniciarProcessamento(MultipartFile file) throws Exception {
+    public Result<ProcessamentoCriadoResponse> iniciarProcessamento(MultipartFile file) throws Exception {
         List<String> erros = validator.validar(file);
 
         if (!erros.isEmpty()) {
             return Result.failure(erros);
         }
 
+        Integer idUsuario = authenticatedUserService.getAuthenticatedUserId();
+
         ProcessamentoArquivo processamento = ProcessamentoArquivo.builder()
                 .nomeArquivo(file.getOriginalFilename())
                 .status(StatusProcessamento.EM_PROCESSAMENTO)
+                .usuarioId(idUsuario)
+                .dataHoraInicio(LocalDateTime.now())
                 .build();
 
         processamento = processamentoArquivoRepository.save(processamento);
-        UUID id = processamento.getId();
+        Long id = processamento.getId();
 
         Path tempFile = Files.createTempFile("upload_" + id + "_", ".txt");
         file.transferTo(tempFile.toFile());
 
         JobParameters params = new JobParametersBuilder()
-                .addString("processamentoId", id.toString())
+                .addLong("processamentoId", id)
                 .addString("filePath", tempFile.toAbsolutePath().toString())
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
-
-        // Agora este comando não trava mais o Controller!
+        
         jobLauncher.run(processarArquivoJob, params);
 
-        return Result.success(id);
+        return Result.success(new ProcessamentoCriadoResponse(id,StatusProcessamento.EM_PROCESSAMENTO.toString()));
     }
 
     @Override
-    public ProcessamentoResponse consultarProcessamento(UUID id) {
+    public ProcessamentoResponse consultarProcessamento(Long id) {
         return processamentoArquivoRepository.findByIdWithResumos(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new RuntimeException("Processamento não encontrado."));
@@ -94,6 +104,8 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
                 entity.getNomeArquivo(),
                 entity.getStatus().name(),
                 entity.getDataCriacao(),
+                entity.getDataHoraInicio(),
+                entity.getDataHoraFinalizou(),
                 resumosDto
         );
     }

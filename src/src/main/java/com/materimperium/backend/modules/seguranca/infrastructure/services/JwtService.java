@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.materimperium.backend.modules.seguranca.domain.entities.User;
+
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +21,9 @@ public class JwtService {
 
     @Value("${application.security.jwt.secret-key:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
     private String secretKey;
+
+    @Value("${application.security.jwt.expiration:300000}") // 5 minutos para expirar
+    private long jwtExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -34,12 +39,16 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        if (userDetails instanceof User usuario) {
+            extraClaims.put("userId", usuario.getId().toString());
+        }
+
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 86400000)) // 24h
-                .signWith(getSignInKey()) // Na 0.12.x não precisa passar o algoritmo se usar SecretKey
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration)) // 5minutos
+                .signWith(getSignInKey())
                 .compact();
     }
 

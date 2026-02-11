@@ -1,5 +1,6 @@
 package com.materimperium.backend.modules.processamento.api.controllers;
 
+import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoCriadoResponse;
 import com.materimperium.backend.modules.shared.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.application.interfaces.ProcessamentoService;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/processamento")
@@ -28,19 +28,19 @@ public class ProcessamentoController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ENVIO')")
     public ResponseEntity<?> uploadArquivo(@RequestParam("file") MultipartFile file) throws Exception {
-        Result<UUID> result = processamentoService.iniciarProcessamento(file);
+        Result<ProcessamentoCriadoResponse> result = processamentoService.iniciarProcessamento(file);
 
         if (!result.isSuccess()) {
-            return ResponseEntity.badRequest().body(result.errors()); // Retorna 400 com lista de erros
+            return ResponseEntity.badRequest().body(result); // Retorna 400 com lista de erros
         }
 
-        return ResponseEntity.accepted().body(result.value());
+        return ResponseEntity.accepted().body(result);
     }
 
     @Operation(summary = "Consulta um processamento por ID", description = "Retorna os detalhes do processamento e a contagem de registros processados.")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ENVIO', 'CONSULTA')")
-    public ResponseEntity<ProcessamentoResponse> consultar(@PathVariable UUID id) {
+    public ResponseEntity<ProcessamentoResponse> consultar(@PathVariable Long id) {
         ProcessamentoResponse processamento = processamentoService.consultarProcessamento(id);
         return ResponseEntity.ok(processamento);
     }

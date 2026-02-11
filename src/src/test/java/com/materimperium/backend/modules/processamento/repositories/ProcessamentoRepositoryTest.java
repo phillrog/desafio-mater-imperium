@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -26,7 +25,7 @@ class ProcessamentoRepositoryTest {
     @DisplayName("Deve simular a busca de um processamento por ID no domínio")
     void deveSimularBuscaPorId() {
         // Arrange
-        UUID id = UUID.randomUUID();
+        Long id = 12345L;
         ProcessamentoArquivo mockEntity = ProcessamentoArquivo.builder()
                 .id(id)
                 .nomeArquivo("teste.txt")
@@ -48,10 +47,10 @@ class ProcessamentoRepositoryTest {
     @DisplayName("Deve simular a busca de processamento com resumos carregados")
     void deveSimularBuscaComResumos() {
         // Arrange
-        UUID id = UUID.randomUUID();
+        Long id = 999L; // Mudado para Long
         ProcessamentoArquivo mockEntity = ProcessamentoArquivo.builder()
                 .id(id)
-                .nomeArquivo("gigante.txt")
+                .nomeArquivo("arquivo.txt")
                 .build();
 
         when(repository.findByIdWithResumos(id)).thenReturn(Optional.of(mockEntity));
@@ -61,7 +60,8 @@ class ProcessamentoRepositoryTest {
 
         // Assert
         assertThat(resultado).isPresent();
-        assertThat(resultado.get().getNomeArquivo()).isEqualTo("gigante.txt");
+        assertThat(resultado.get().getId()).isEqualTo(id);
+        assertThat(resultado.get().getNomeArquivo()).isEqualTo("arquivo.txt");
     }
 
     @Test
@@ -69,7 +69,11 @@ class ProcessamentoRepositoryTest {
     void deveSimularListagemPorStatus() {
         // Arrange
         StatusProcessamento status = StatusProcessamento.FINALIZADO_COM_SUCESSO;
-        ProcessamentoArquivo p1 = ProcessamentoArquivo.builder().nomeArquivo("arq1.txt").build();
+        ProcessamentoArquivo p1 = ProcessamentoArquivo.builder()
+                .id(1L)
+                .nomeArquivo("arq1.txt")
+                .status(status)
+                .build();
 
         when(repository.findByStatusWithoutResumos(status)).thenReturn(List.of(p1));
 

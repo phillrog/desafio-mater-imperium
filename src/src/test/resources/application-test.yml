@@ -7,7 +7,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
 
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: update
     properties:
@@ -22,7 +22,7 @@ spring:
     database-item-reader-count-threshold: 10
     jdbc:
       isolation-level-for-create: serializable
-      initialize-schema: never
+      initialize-schema: always
     job:
       enabled: false
 

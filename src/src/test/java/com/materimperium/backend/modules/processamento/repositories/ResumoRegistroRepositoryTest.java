@@ -13,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +34,7 @@ class ResumoRegistroRepositoryTest {
     @DisplayName("Deve inserir um novo resumo quando não houver conflito")
     void deveInserirNovoResumo() {
         // Arrange
-        UUID procId = criarProcessamentoMock();
+        Long procId = criarProcessamentoMock();
 
         // Act
         repository.upsertResumo(procId, "C100", 50L);
@@ -57,7 +56,7 @@ class ResumoRegistroRepositoryTest {
     @DisplayName("Deve somar a quantidade quando houver conflito de código de registro (UPSERT)")
     void deveSomarQuantidadeNoUpsert() {
         // Arrange
-        UUID procId = criarProcessamentoMock();
+        Long procId = criarProcessamentoMock();
 
         // Act
         repository.upsertResumo(procId, "0000", 10L);
@@ -81,7 +80,7 @@ class ResumoRegistroRepositoryTest {
         assertThat(proc.get().getResumos().get(0).getQuantidade()).isEqualTo(35L);
     }
 
-    private UUID criarProcessamentoMock() {
+    private Long criarProcessamentoMock() {
         ProcessamentoArquivo proc = ProcessamentoArquivo.builder()
                 .nomeArquivo("teste_upsert.txt")
                 .status(StatusProcessamento.EM_PROCESSAMENTO)

@@ -8,7 +8,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -19,14 +19,16 @@ public class ProcessamentoJobListener implements JobExecutionListener {
 
     @Override
     public void afterJob(JobExecution jobExecution) {
-        String procId = jobExecution.getJobParameters().getString("processamentoId");
-        var proc = processamentoArquivoRepository.findById(UUID.fromString(procId)).orElseThrow();
+        Long processamentoId = jobExecution.getJobParameters().getLong("processamentoId");
+        var proc = processamentoArquivoRepository.findById(processamentoId).orElseThrow();
 
         if (jobExecution.getStatus().isUnsuccessful()) {
             proc.setStatus(StatusProcessamento.FINALIZADO_COM_ERROS);
         } else {
             proc.setStatus(StatusProcessamento.FINALIZADO_COM_SUCESSO);
         }
+
+        proc.setDataHoraFinalizou(LocalDateTime.now());
 
         var stepExecution = jobExecution.getStepExecutions().iterator().next();
         long lidas = stepExecution.getReadCount();

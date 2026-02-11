@@ -1,5 +1,6 @@
 package com.materimperium.backend.modules.processamento.services;
 
+import com.materimperium.backend.modules.processamento.application.interfaces.AuthenticatedUserService;
 import com.materimperium.backend.modules.shared.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.application.services.ProcessamentoServiceImpl;
@@ -46,26 +47,32 @@ class ProcessamentoServiceImplTest {
     @InjectMocks
     private ProcessamentoServiceImpl service;
 
+    @Mock
+    private AuthenticatedUserService authenticatedUserService;
+
     @Test
     @DisplayName("Deve iniciar processamento com sucesso quando validador não retorna erros")
     void deveIniciarProcessamentoComSucesso() throws Exception {
         // Arrange
-        UUID idManual = UUID.randomUUID();
+        Long idManual = 1L;
+        Integer usuarioIdMock = 123;
+
         ProcessamentoArquivo mockup = ProcessamentoArquivo.builder()
                 .id(idManual)
                 .nomeArquivo("teste.txt")
                 .status(StatusProcessamento.EM_PROCESSAMENTO)
                 .build();
 
+        when(authenticatedUserService.getAuthenticatedUserId()).thenReturn(usuarioIdMock);
+
         when(validator.validar(any())).thenReturn(Collections.emptyList());
         when(file.getOriginalFilename()).thenReturn("teste.txt");
         when(repository.save(any())).thenReturn(mockup);
 
-        // Simula a criação de arquivo temporário (importante para não dar erro de IO no teste)
         doAnswer(invocation -> null).when(file).transferTo(any(java.io.File.class));
 
         // Act
-        Result<UUID> result = service.iniciarProcessamento(file);
+        Result<Long> result = service.iniciarProcessamento(file);
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -82,7 +89,7 @@ class ProcessamentoServiceImplTest {
         when(validator.validar(file)).thenReturn(errosMock);
 
         // Act
-        Result<UUID> result = service.iniciarProcessamento(file);
+        Result<Long> result = service.iniciarProcessamento(file);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -95,7 +102,7 @@ class ProcessamentoServiceImplTest {
     @DisplayName("Deve consultar um processamento por ID e converter para DTO")
     void deveConsultarComSucessoEConverterParaDto() {
         // Arrange
-        UUID id = UUID.randomUUID();
+        Long id = 1L;
         ProcessamentoArquivo entity = ProcessamentoArquivo.builder()
                 .id(id)
                 .nomeArquivo("documento.txt")
@@ -118,7 +125,7 @@ class ProcessamentoServiceImplTest {
     @Test
     @DisplayName("Deve lançar exceção quando o processamento não for encontrado")
     void deveLancarExcecaoAoConsultarIdInexistente() {
-        UUID id = UUID.randomUUID();
+        Long id = 1L;
         when(repository.findByIdWithResumos(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.consultarProcessamento(id))
@@ -131,7 +138,7 @@ class ProcessamentoServiceImplTest {
     void deveListarComFiltroDeStatus() {
         StatusProcessamento statusFiltro = StatusProcessamento.EM_PROCESSAMENTO;
         ProcessamentoArquivo p1 = ProcessamentoArquivo.builder()
-                .id(UUID.randomUUID())
+                .id(1L)
                 .status(statusFiltro)
                 .resumos(Collections.emptyList())
                 .build();

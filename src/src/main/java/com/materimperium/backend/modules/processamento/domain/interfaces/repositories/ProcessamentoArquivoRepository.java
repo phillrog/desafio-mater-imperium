@@ -5,11 +5,10 @@ import com.materimperium.backend.modules.processamento.domain.entities.StatusPro
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ProcessamentoArquivoRepository {
-    Optional<ProcessamentoArquivo> findByIdWithResumos(UUID id);
+    Optional<ProcessamentoArquivo> findByIdWithResumos(Long id);
     List<ProcessamentoArquivo> findByStatusWithoutResumos(StatusProcessamento status);
     ProcessamentoArquivo save(ProcessamentoArquivo processamento); // Contrato de persistência
-    Optional<ProcessamentoArquivo> findById(UUID id);
+    Optional<ProcessamentoArquivo> findById(Long id);
 }

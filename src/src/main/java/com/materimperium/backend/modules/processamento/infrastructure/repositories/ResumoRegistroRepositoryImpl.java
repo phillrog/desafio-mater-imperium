@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 
 @Repository
 public interface ResumoRegistroRepositoryImpl extends JpaRepository<ResumoRegistro, Long>, ResumoRegistroRepository {
@@ -22,5 +21,5 @@ public interface ResumoRegistroRepositoryImpl extends JpaRepository<ResumoRegist
         ON CONFLICT (processamento_id, codigo_registro) 
         DO UPDATE SET quantidade = resumo_registros.quantidade + EXCLUDED.quantidade
         """, nativeQuery = true)
-    void upsertResumo(@Param("procId") UUID procId, @Param("codigo") String codigo, @Param("qtd") Long qtd);
+    void upsertResumo(@Param("procId") Long procId, @Param("codigo") String codigo, @Param("qtd") Long qtd);
 }

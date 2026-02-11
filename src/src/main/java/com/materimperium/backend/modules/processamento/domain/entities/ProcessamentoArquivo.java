@@ -1,6 +1,5 @@
 package com.materimperium.backend.modules.processamento.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -17,16 +16,20 @@ import java.util.*;
 public class ProcessamentoArquivo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private UUID id;
+    private Long id;
 
     private String nomeArquivo;
 
-    private LocalDateTime dataCriacao;
+    private LocalDateTime dataCriacao;      
+    private LocalDateTime dataHoraInicio;   
+    private LocalDateTime dataHoraFinalizou;
 
     @Enumerated(EnumType.STRING)
     private StatusProcessamento status;
+
+    private Integer usuarioId;
 
     @Builder.Default
     @OneToMany(mappedBy = "processamento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

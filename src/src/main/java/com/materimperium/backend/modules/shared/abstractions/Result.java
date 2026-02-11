@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 public record Result<T>(
-        T value,
+        T data,
         List<String> errors,
         boolean isSuccess
 ) {

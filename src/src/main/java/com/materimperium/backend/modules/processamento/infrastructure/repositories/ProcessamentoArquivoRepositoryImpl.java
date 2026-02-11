@@ -10,17 +10,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public interface ProcessamentoArquivoRepositoryImpl
-        extends JpaRepository<ProcessamentoArquivo, UUID>, ProcessamentoArquivoRepository {
+        extends JpaRepository<ProcessamentoArquivo, Long>, ProcessamentoArquivoRepository {
     // O Spring Data JPA implementará os métodos automaticamente
 
 
     @EntityGraph(attributePaths = {"resumos"})
     @Query("SELECT p FROM ProcessamentoArquivo p WHERE p.id = :id")
-    Optional<ProcessamentoArquivo> findByIdWithResumos(UUID id);
+    Optional<ProcessamentoArquivo> findByIdWithResumos(Long id);
 
 
     @Query("SELECT p FROM ProcessamentoArquivo p " +

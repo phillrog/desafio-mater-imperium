@@ -26,9 +26,7 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
@@ -93,7 +91,7 @@ public class BatchConfig {
     @StepScope
     public ItemWriter<String> writer(@Value("#{jobParameters['processamentoId']}") String processamentoId) {
         return chunk -> {
-            UUID procId = UUID.fromString(processamentoId);
+            Long procId = Long.parseLong(processamentoId);
             // TreeMap ordena os códigos, o que evita Deadlock (threads seguem a mesma fila)
             Map<String, Long> localMap = new java.util.TreeMap<>();
 
