@@ -1,5 +1,6 @@
 package com.materimperium.backend.modules.processamento.application.services;
 
+import com.materimperium.backend.modules.processamento.application.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.application.dtos.ResumoResponse;
 import com.materimperium.backend.modules.processamento.application.validators.ArquivoValidator;
@@ -29,9 +30,13 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
     private final Job processarArquivoJob;
 
     @Override
-    public UUID iniciarProcessamento(MultipartFile file) throws Exception {
+    public Result<UUID> iniciarProcessamento(MultipartFile file) throws Exception {
         // Validação de cabeçalho (Regra de Negócio)
-        validator.validarCabecalho(file.getInputStream());
+        List<String> erros = validator.validarCabecalho(file.getInputStream());
+
+        if (!erros.isEmpty()) {
+            return Result.failure(erros); // Retorna falha sem exception
+        }
 
         ProcessamentoArquivo processamento = ProcessamentoArquivo.builder()
                 .nomeArquivo(file.getOriginalFilename())
@@ -53,7 +58,7 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
 
         jobLauncher.run(processarArquivoJob, params);
 
-        return id;
+        return Result.success(id);
     }
 
     @Override

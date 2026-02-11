@@ -4,16 +4,16 @@ spring:
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: false
     hibernate:
       ddl-auto: create-drop
-      format_sql: true # Deixa o SQL legível (identado)
-      highlight_sql: true # Adiciona cores (se seu terminal suportar)
-      use_sql_comments: true #
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
@@ -23,10 +23,20 @@ spring:
     job:
       enabled: false
 
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
+      location: ${java.io.tmpdir}
+      file-size-threshold: 50KB
+
 server:
   port: 8080
+  tomcat:
+    connection-timeout: 300000 # 5 minutos
+    max-swallow-size: 1GB
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG # Nível de log para as queries
-    org.hibernate.orm.jdbc.bind: TRACE # EXTREMAMENTE ÚTIL: Mostra os valores dos parâmetros (?) que entram na query
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

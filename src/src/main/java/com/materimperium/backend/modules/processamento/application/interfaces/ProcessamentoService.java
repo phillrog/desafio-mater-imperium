@@ -1,5 +1,6 @@
 package com.materimperium.backend.modules.processamento.application.interfaces;
 
+import com.materimperium.backend.modules.processamento.application.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.domain.entities.ProcessamentoArquivo;
 import com.materimperium.backend.modules.processamento.domain.entities.StatusProcessamento;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 
 public interface ProcessamentoService {
-    UUID iniciarProcessamento(MultipartFile file) throws Exception;
+    Result<UUID> iniciarProcessamento(MultipartFile file) throws Exception;
     ProcessamentoResponse consultarProcessamento(UUID id);
     List<ProcessamentoResponse>  listarTodos(StatusProcessamento status);
 }
