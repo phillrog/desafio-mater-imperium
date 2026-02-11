@@ -1,4 +1,4 @@
-package com.materimperium.backend.modules.processamento.application.abstractions;
+package com.materimperium.backend.modules.shared.abstractions;
 
 import java.util.Collections;
 import java.util.List;

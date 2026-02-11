@@ -1,4 +1,4 @@
-package com.materimperium.backend.modules.seguranca.interfaces.repositories;
+package com.materimperium.backend.modules.seguranca.applications.repositories;
 
 
 import com.materimperium.backend.modules.seguranca.domain.entities.Token;

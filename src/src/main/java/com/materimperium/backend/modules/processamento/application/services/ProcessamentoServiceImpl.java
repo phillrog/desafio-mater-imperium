@@ -1,6 +1,6 @@
 package com.materimperium.backend.modules.processamento.application.services;
 
-import com.materimperium.backend.modules.processamento.application.abstractions.Result;
+import com.materimperium.backend.modules.shared.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.application.dtos.ResumoResponse;
 import com.materimperium.backend.modules.processamento.application.validators.ArquivoValidator;

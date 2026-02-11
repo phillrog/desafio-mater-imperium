@@ -1,6 +1,6 @@
 package com.materimperium.backend.modules.processamento.services;
 
-import com.materimperium.backend.modules.processamento.application.abstractions.Result;
+import com.materimperium.backend.modules.shared.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
 import com.materimperium.backend.modules.processamento.application.services.ProcessamentoServiceImpl;
 import com.materimperium.backend.modules.processamento.application.validators.ArquivoValidator;
@@ -17,7 +17,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 
