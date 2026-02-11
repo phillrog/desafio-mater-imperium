@@ -1,11 +1,10 @@
 package com.materimperium.backend.modules.processamento.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "processamento_arquivos")
@@ -14,10 +13,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ProcessamentoArquivo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     private String nomeArquivo;
@@ -27,11 +28,26 @@ public class ProcessamentoArquivo {
     @Enumerated(EnumType.STRING)
     private StatusProcessamento status;
 
-    @OneToMany(mappedBy = "processamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @OneToMany(mappedBy = "processamento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ResumoRegistro> resumos = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         this.dataCriacao = LocalDateTime.now();
+    }
+
+    public void adicionarResumo(String codigo, Long quantidade) {
+        if (this.resumos == null) {
+            this.resumos = new ArrayList<>();
+        }
+
+        ResumoRegistro novoResumo = ResumoRegistro.builder()
+                .codigoRegistro(codigo)
+                .quantidade(quantidade)
+                .processamento(this) // Mantém a consistência bidirecional
+                .build();
+
+        this.resumos.add(novoResumo);
     }
 }

@@ -1,13 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/materimperium
-    username: username
+    url: jdbc:postgresql://localhost:5432/mater_imperium
+    username: admin
     password: password
     driver-class-name: org.postgresql.Driver
   jpa:
+    show-sql: false
     hibernate:
       ddl-auto: create-drop
-    show-sql: false
+      format_sql: true # Deixa o SQL legível (identado)
+      highlight_sql: true # Adiciona cores (se seu terminal suportar)
+      use_sql_comments: true #
     properties:
       hibernate:
         format_sql: true
@@ -21,4 +24,9 @@ spring:
       enabled: false
 
 server:
-  port: 8080      
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG # Nível de log para as queries
+    org.hibernate.orm.jdbc.bind: TRACE # EXTREMAMENTE ÚTIL: Mostra os valores dos parâmetros (?) que entram na query
