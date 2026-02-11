@@ -82,9 +82,9 @@
             <version>2.5.0</version>
         </dependency>
         <dependency>
-            <groupId>com.materimperium</groupId>
-            <artifactId>mater-imperium-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

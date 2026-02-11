@@ -58,38 +58,38 @@ class ProcessamentoServiceImplTest {
                 .status(StatusProcessamento.EM_PROCESSAMENTO)
                 .build();
 
-        // IMPORTANTE: Mockar o validador retornando lista VAZIA (sucesso)
-        when(validator.validarCabecalho(any())).thenReturn(Collections.emptyList());
-        when(file.getInputStream()).thenReturn(mock(InputStream.class));
+        when(validator.validar(any())).thenReturn(Collections.emptyList());
         when(file.getOriginalFilename()).thenReturn("teste.txt");
         when(repository.save(any())).thenReturn(mockup);
+
+        // Simula a criação de arquivo temporário (importante para não dar erro de IO no teste)
+        doAnswer(invocation -> null).when(file).transferTo(any(java.io.File.class));
 
         // Act
         Result<UUID> result = service.iniciarProcessamento(file);
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
-        assertThat(result.value()).isEqualTo(idManual); // O valor dentro do Result deve ser o ID
-        verify(validator).validarCabecalho(any());
+        assertThat(result.value()).isEqualTo(idManual);
+        verify(validator).validar(file);
         verify(jobLauncher).run(any(), any());
     }
 
     @Test
-    @DisplayName("Deve retornar falha quando o validador encontrar erros no cabeçalho")
+    @DisplayName("Deve retornar falha quando o validador encontrar erros")
     void deveRetornarFalhaQuandoValidadorEncontrarErros() throws Exception {
         // Arrange
-        List<String> errosMock = List.of("Cabeçalho inválido");
-        when(validator.validarCabecalho(any())).thenReturn(errosMock);
-        when(file.getInputStream()).thenReturn(mock(InputStream.class));
+        List<String> errosMock = List.of("Arquivo inválido: Apenas extensões .txt são permitidas.");
+        when(validator.validar(file)).thenReturn(errosMock);
 
         // Act
         Result<UUID> result = service.iniciarProcessamento(file);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
-        assertThat(result.errors()).contains("Cabeçalho inválido");
-        verify(repository, never()).save(any()); // Não deve salvar se houver erro
-        verify(jobLauncher, never()).run(any(), any()); // Não deve iniciar o job
+        assertThat(result.errors()).contains("Arquivo inválido: Apenas extensões .txt são permitidas.");
+        verify(repository, never()).save(any());
+        verify(jobLauncher, never()).run(any(), any());
     }
 
     @Test

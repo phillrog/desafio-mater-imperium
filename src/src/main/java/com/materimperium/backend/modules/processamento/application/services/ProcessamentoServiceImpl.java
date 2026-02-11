@@ -8,7 +8,7 @@ import com.materimperium.backend.modules.processamento.domain.entities.Processam
 import com.materimperium.backend.modules.processamento.domain.entities.StatusProcessamento;
 import com.materimperium.backend.modules.processamento.domain.interfaces.repositories.ProcessamentoArquivoRepository;
 import com.materimperium.backend.modules.processamento.application.interfaces.ProcessamentoService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier; // Adicionado
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -22,20 +22,29 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class ProcessamentoServiceImpl implements ProcessamentoService {
     private final ProcessamentoArquivoRepository processamentoArquivoRepository;
     private final ArquivoValidator validator;
     private final JobLauncher jobLauncher;
     private final Job processarArquivoJob;
 
+    public ProcessamentoServiceImpl(
+            ProcessamentoArquivoRepository processamentoArquivoRepository,
+            ArquivoValidator validator,
+            @Qualifier("asyncJobLauncher") JobLauncher jobLauncher,
+            Job processarArquivoJob) {
+        this.processamentoArquivoRepository = processamentoArquivoRepository;
+        this.validator = validator;
+        this.jobLauncher = jobLauncher;
+        this.processarArquivoJob = processarArquivoJob;
+    }
+
     @Override
     public Result<UUID> iniciarProcessamento(MultipartFile file) throws Exception {
-        // Validação de cabeçalho (Regra de Negócio)
-        List<String> erros = validator.validarCabecalho(file.getInputStream());
+        List<String> erros = validator.validar(file);
 
         if (!erros.isEmpty()) {
-            return Result.failure(erros); // Retorna falha sem exception
+            return Result.failure(erros);
         }
 
         ProcessamentoArquivo processamento = ProcessamentoArquivo.builder()
@@ -46,16 +55,16 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
         processamento = processamentoArquivoRepository.save(processamento);
         UUID id = processamento.getId();
 
-        // Persistência temporária para processamento em Chunk do Spring Batch
-        Path tempFile = Files.createTempFile("upload_", "_" + file.getOriginalFilename());
+        Path tempFile = Files.createTempFile("upload_" + id + "_", ".txt");
         file.transferTo(tempFile.toFile());
 
         JobParameters params = new JobParametersBuilder()
                 .addString("processamentoId", id.toString())
-                .addString("filePath", tempFile.toString())
+                .addString("filePath", tempFile.toAbsolutePath().toString())
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
+        // Agora este comando não trava mais o Controller!
         jobLauncher.run(processarArquivoJob, params);
 
         return Result.success(id);
@@ -64,8 +73,7 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
     @Override
     public ProcessamentoResponse consultarProcessamento(UUID id) {
         return processamentoArquivoRepository.findByIdWithResumos(id)
-                .stream().map(this::toResponse)
-                .findFirst()
+                .map(this::toResponse)
                 .orElseThrow(() -> new RuntimeException("Processamento não encontrado."));
     }
 

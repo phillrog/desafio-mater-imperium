@@ -1,20 +1,15 @@
 spring:
-  main:
-    allow-bean-definition-overriding: true
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/mater_imperium
+    url: jdbc:postgresql://localhost:5432/mater_imperium_test
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 20 # conforme o poder do processador (CPU cores * 2)
-      minimum-idle: 10
+    type: com.zaxxer.hikari.HikariDataSource
 
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -24,8 +19,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   batch:
+    database-item-reader-count-threshold: 10
     jdbc:
-      initialize-schema: always
+      isolation-level-for-create: serializable
+      initialize-schema: never
     job:
       enabled: false
 
@@ -46,5 +43,3 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
-    org.springframework.security: DEBUG
-    org.springframework.security.web.FilterChainProxy: DEBUG
