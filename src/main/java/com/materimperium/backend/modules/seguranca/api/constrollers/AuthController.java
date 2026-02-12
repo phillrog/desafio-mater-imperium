@@ -5,6 +5,7 @@ import com.materimperium.backend.modules.seguranca.api.request.AuthenticationReq
 import com.materimperium.backend.modules.seguranca.api.request.AuthenticationResponse;
 import com.materimperium.backend.modules.seguranca.api.request.RegisterRequest;
 import com.materimperium.backend.modules.seguranca.applications.services.AuthenticationService;
+import com.materimperium.backend.modules.shared.abstractions.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class AuthController {
 
     @Operation(summary = "Registrar um novo usuário (ENVIO ou CONSULTA)")
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<Result<AuthenticationResponse>> register(
             @Valid @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(service.register(request));
@@ -33,7 +34,7 @@ public class AuthController {
 
     @Operation(summary = "Autenticar usuário e obter token Bearer")
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
+    public ResponseEntity<Result<AuthenticationResponse>> authenticate(
             @Valid @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
