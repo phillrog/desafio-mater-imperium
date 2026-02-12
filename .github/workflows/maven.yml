@@ -33,10 +33,4 @@ jobs:
 
     # Step para gerar o JAR final
     - name: Build package
-      run: mvn -B package -DskipTests
-
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@v1
-      with:
-        # POM explicitamente
-        directory: .
+      run: mvn -B package -DskipTests    
