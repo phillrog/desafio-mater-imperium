@@ -1,4 +1,4 @@
-<img width="1919" height="966" alt="Captura de tela 2026-02-12 013834" src="https://github.com/user-attachments/assets/5b2a80de-ecb3-4860-b05a-70bd3f951ced" /># [![CI/CD Desafio Backend Mater Imperium](https://github.com/phillrog/desafio-mater-imperium/actions/workflows/maven.yml/badge.svg)](https://github.com/phillrog/desafio-mater-imperium/actions/workflows/maven.yml) - [<img src="https://img.shields.io/badge/Railway%20Deploy-black?style=for-the-badge&logo=railway" width="220" height="38.45"/></a>](https://desafio-mater-imperium-production.up.railway.app/swagger-ui/index.html)
+# [![CI/CD Desafio Backend Mater Imperium](https://github.com/phillrog/desafio-mater-imperium/actions/workflows/maven.yml/badge.svg)](https://github.com/phillrog/desafio-mater-imperium/actions/workflows/maven.yml) - [<img src="https://img.shields.io/badge/Railway%20Deploy-black?style=for-the-badge&logo=railway" width="220" height="38.45"/></a>](https://desafio-mater-imperium-production.up.railway.app/swagger-ui/index.html)
 
 Desafio Backend - MaterImperium
 ===============================
