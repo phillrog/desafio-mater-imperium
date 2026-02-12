@@ -1,4 +1,4 @@
-name: CI Desafio Backend Mater Imperium
+name: CI/CD Desafio Backend Mater Imperium - Railway
 
 on:
   push:
@@ -40,3 +40,10 @@ jobs:
       uses: advanced-security/maven-dependency-submission-action@v1
       with:
         directory: .
+
+    - name: Deploy to Railway
+      run: |
+        npm install -g @railway/cli
+        railway up -e production --detach
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
