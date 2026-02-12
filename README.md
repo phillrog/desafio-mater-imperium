@@ -120,9 +120,18 @@ A aplicação protege os endpoints conforme os requisitos:
 
     ```
 
-2.  Configure as variáveis de ambiente no seu `application.yml` ou exporte no terminal (DB_URL, DB_USERNAME, DB_PASSWORD).
+2.  Configure as variáveis de ambiente no seu `application.yml` ou exporte no terminal (DB_URL, DB_USERNAME, DB_PASSWORD) ou utilize as predefinidas.
 
-3.  Execute a aplicação:
+3.  Subir a infraestrutura:
+
+    Bash
+
+    ```
+    docker-compose up -d
+
+    ```
+    
+4.  Execute a aplicação:
 
     Bash
 
