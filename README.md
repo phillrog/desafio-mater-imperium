@@ -1,6 +1,6 @@
 # [![CI/CD Desafio Backend Mater Imperium](https://github.com/phillrog/desafio-mater-imperium/actions/workflows/maven.yml/badge.svg)](https://github.com/phillrog/desafio-mater-imperium/actions/workflows/maven.yml) - [<img src="https://img.shields.io/badge/Railway%20Deploy-black?style=for-the-badge&logo=railway" width="220" height="38.45"/></a>](https://desafio-mater-imperium-production.up.railway.app/swagger-ui/index.html)
 
-Desafio Backend - MaterImperium
+Desafio Backend - Mater Imperium
 ===============================
 
 Este repositório contém a solução para o desafio técnico de processamento de arquivos em background, desenvolvido com **Java 21** e o ecossistema **Spring Boot 3.5**.
