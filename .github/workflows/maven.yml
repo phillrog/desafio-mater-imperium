@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: .
+
     steps:
     - uses: actions/checkout@v4
 
@@ -20,12 +24,16 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    # testes
-    - name: Testes Unitários / Integração Test Container
-      run: mvn test -Ptest
+    # Step para rodar os testes (Testcontainers subirá o Postgres aqui)
+    - name: Run Unit and Integration Tests
+      run: mvn test
 
-    - name: Build
-      run: mvn -B package -DskipTests --file pom.xml
-    
+    # Step para gerar o JAR final
+    - name: Build package
+      run: mvn -B package -DskipTests
+
     - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      uses: advanced-security/maven-dependency-submission-action@v1
+      with:
+        # POM explicitamente
+        directory: .
