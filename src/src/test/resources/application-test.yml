@@ -1,15 +1,15 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/mater_imperium_test
+    url: jdbc:tc:postgresql:15:///mater_imperium_test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     username: admin
     password: password
-    driver-class-name: org.postgresql.Driver
-    type: com.zaxxer.hikari.HikariDataSource
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+    generate-ddl: true
     properties:
       hibernate:
         format_sql: true
