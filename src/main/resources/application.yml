@@ -50,4 +50,3 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.security.web.FilterChainProxy: DEBUG
     com.zaxxer.hikari: DEBUG
-    org.hibernate.SQL: DEBUG
