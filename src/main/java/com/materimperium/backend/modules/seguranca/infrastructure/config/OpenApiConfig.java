@@ -23,8 +23,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
         ),
         servers = {
                 @Server(
-                        description = "DESENVOLVIMENTO",
-                        url = "http://localhost:8080"
+                        description = "${app.public.enviroment:DESENVOLVIMENTO}",
+                        url = "${app.public.url:http://localhost:8080}"
                 )
         },
         security = {
