@@ -45,8 +45,10 @@ server:
 
 logging:
   level:
+    root: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
     org.springframework.security: DEBUG
     org.springframework.security.web.FilterChainProxy: DEBUG
     com.zaxxer.hikari: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
