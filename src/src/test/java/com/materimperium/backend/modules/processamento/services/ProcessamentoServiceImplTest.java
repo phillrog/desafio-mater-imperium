@@ -1,5 +1,6 @@
 package com.materimperium.backend.modules.processamento.services;
 
+import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoCriadoResponse;
 import com.materimperium.backend.modules.processamento.application.interfaces.AuthenticatedUserService;
 import com.materimperium.backend.modules.shared.abstractions.Result;
 import com.materimperium.backend.modules.processamento.application.dtos.ProcessamentoResponse;
@@ -72,11 +73,11 @@ class ProcessamentoServiceImplTest {
         doAnswer(invocation -> null).when(file).transferTo(any(java.io.File.class));
 
         // Act
-        Result<Long> result = service.iniciarProcessamento(file);
+        Result<ProcessamentoCriadoResponse> result = service.iniciarProcessamento(file);
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
-        assertThat(result.value()).isEqualTo(idManual);
+        assertThat(result.data().processamentoId()).isEqualTo(idManual);
         verify(validator).validar(file);
         verify(jobLauncher).run(any(), any());
     }
@@ -89,7 +90,7 @@ class ProcessamentoServiceImplTest {
         when(validator.validar(file)).thenReturn(errosMock);
 
         // Act
-        Result<Long> result = service.iniciarProcessamento(file);
+        Result<ProcessamentoCriadoResponse> result = service.iniciarProcessamento(file);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
