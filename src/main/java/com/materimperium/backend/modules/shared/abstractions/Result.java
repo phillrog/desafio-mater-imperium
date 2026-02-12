@@ -1,8 +1,11 @@
 package com.materimperium.backend.modules.shared.abstractions;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Collections;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record Result<T>(
         T data,
         List<String> errors,

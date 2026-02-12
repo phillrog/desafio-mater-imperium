@@ -115,11 +115,11 @@ class ProcessamentoServiceImplTest {
         when(repository.findByIdWithResumos(id)).thenReturn(Optional.of(entity));
 
         // Act
-        ProcessamentoResponse response = service.consultarProcessamento(id);
+        Result<ProcessamentoResponse> response = service.consultarProcessamento(id);
 
         // Assert
         assertThat(response).isNotNull();
-        assertThat(response.id()).isEqualTo(id);
+        assertThat(response.data().id()).isEqualTo(id);
         verify(repository).findByIdWithResumos(id);
     }
 
@@ -129,9 +129,14 @@ class ProcessamentoServiceImplTest {
         Long id = 1L;
         when(repository.findByIdWithResumos(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.consultarProcessamento(id))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Processamento não encontrado.");
+        // Act
+        Result<ProcessamentoResponse> resultado = service.consultarProcessamento(id);
+
+        // Assert
+        assertThat(resultado.isSuccess()).isFalse();
+        assertThat(resultado.errors())
+                .containsExactly("Processamento com ID " + id + " não encontrado.");
+        assertThat(resultado.data()).isNull();
     }
 
     @Test
@@ -146,9 +151,9 @@ class ProcessamentoServiceImplTest {
 
         when(repository.findByStatusWithoutResumos(statusFiltro)).thenReturn(List.of(p1));
 
-        List<ProcessamentoResponse> results = service.listarTodos(statusFiltro);
+        Result<List<ProcessamentoResponse>> results = service.listarTodos(statusFiltro);
 
-        assertThat(results).hasSize(1);
+        assertThat(results.data()).hasSize(1);
         verify(repository).findByStatusWithoutResumos(statusFiltro);
     }
 }

@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ProcessamentoService {
     Result<ProcessamentoCriadoResponse> iniciarProcessamento(MultipartFile file) throws Exception;
-    ProcessamentoResponse consultarProcessamento(Long id);
-    List<ProcessamentoResponse>  listarTodos(StatusProcessamento status);
+    Result<ProcessamentoResponse> consultarProcessamento(Long id);
+    Result<List<ProcessamentoResponse>>  listarTodos(StatusProcessamento status);
 }

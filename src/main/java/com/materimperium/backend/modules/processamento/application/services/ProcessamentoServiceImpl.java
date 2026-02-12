@@ -81,17 +81,20 @@ public class ProcessamentoServiceImpl implements ProcessamentoService {
     }
 
     @Override
-    public ProcessamentoResponse consultarProcessamento(Long id) {
+    public Result<ProcessamentoResponse> consultarProcessamento(Long id) {
         return processamentoArquivoRepository.findByIdWithResumos(id)
-                .map(this::toResponse)
-                .orElseThrow(() -> new RuntimeException("Processamento não encontrado."));
+                .map(entity -> Result.success(this.toResponse(entity)))
+                .orElseGet(() -> Result.failure("Processamento com ID " + id + " não encontrado."));
     }
 
     @Override
-    public List<ProcessamentoResponse> listarTodos(StatusProcessamento status) {
-        return processamentoArquivoRepository.findByStatusWithoutResumos(status).stream()
+    public Result<List<ProcessamentoResponse>> listarTodos(StatusProcessamento status) {
+        List<ProcessamentoResponse> lista = processamentoArquivoRepository.findByStatusWithoutResumos(status)
+                .stream()
                 .map(this::toResponse)
                 .toList();
+
+        return Result.success(lista);
     }
 
     private ProcessamentoResponse toResponse(ProcessamentoArquivo entity) {

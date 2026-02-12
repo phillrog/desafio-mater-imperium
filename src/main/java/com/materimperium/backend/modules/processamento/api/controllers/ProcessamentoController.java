@@ -8,6 +8,7 @@ import com.materimperium.backend.modules.processamento.domain.entities.StatusPro
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,17 +41,21 @@ public class ProcessamentoController {
     @Operation(summary = "Consulta um processamento por ID", description = "Retorna os detalhes do processamento e a contagem de registros processados.")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ENVIO', 'CONSULTA')")
-    public ResponseEntity<ProcessamentoResponse> consultar(@PathVariable Long id) {
-        ProcessamentoResponse processamento = processamentoService.consultarProcessamento(id);
-        return ResponseEntity.ok(processamento);
+    public ResponseEntity<Result<ProcessamentoResponse>> consultar(@PathVariable Long id) {
+        var resultado = processamentoService.consultarProcessamento(id);
+
+        if (!resultado.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultado);
+        }
+
+        return ResponseEntity.ok(resultado);
     }
 
     @Operation(summary = "Consulta todos os processamentos", description = "Retorna os detalhes de todos os processamentos e permite filtrar por status.")
     @GetMapping("")
     @PreAuthorize("hasRole('CONSULTA')")
-    public ResponseEntity<List<ProcessamentoResponse>> listarTodos(
+    public ResponseEntity<Result<List<ProcessamentoResponse>>> listarTodos(
             @RequestParam(required = false) StatusProcessamento status) {
-        List<ProcessamentoResponse> processamentos = processamentoService.listarTodos(status);
-        return ResponseEntity.ok(processamentos);
+        return ResponseEntity.ok(processamentoService.listarTodos(status));
     }
 }
